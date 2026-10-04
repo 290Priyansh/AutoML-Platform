@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  namespace: automl
+  labels:
+    app: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+      - name: worker
+        image: YOUR_ECR_URI/automl-worker:latest
+        envFrom:
+        - configMapRef:
+            name: automl-config
+        - secretRef:
+            name: automl-secrets
+        resources:
+          requests:
+            cpu: "1000m"
+            memory: "2Gi"
+          limits:
+            memory: "4Gi"
+        # No CPU limit - training is bursty
+      serviceAccountName: automl-sa

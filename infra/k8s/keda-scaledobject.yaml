@@ -1,0 +1,19 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: worker-scaler
+  namespace: automl
+spec:
+  scaleTargetRef:
+    name: worker
+  pollingInterval: 30
+  cooldownPeriod: 300
+  minReplicaCount: 1
+  maxReplicaCount: 20
+  triggers:
+  - type: redis
+    metadata:
+      address: redis://redis.automl.svc.cluster.local:6379
+      listName: "celery:training"
+      listLength: "1"
+      enableTLS: "false"

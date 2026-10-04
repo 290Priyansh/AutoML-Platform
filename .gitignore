@@ -1,0 +1,92 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+ENV/
+automl/
+node_modules/
+local_storage/
+.env
+.env.local
+.env.*.local
+
+# Distribution
+dist/
+build/
+*.egg-info/
+pip-wheel-metadata/
+
+# Testing
+.coverage
+coverage.xml
+.pytest_cache/
+.tox/
+htmlcov/
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Linting
+.ruff_cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+.docker/
+
+# Logs
+*.log
+logs/
+
+# MLflow
+mlruns/
+mlflow.db
+
+# DVC
+.dvc/
+data/
+models/
+
+# Terraform
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform/
+
+# Kubernetes
+kubeconfig
+
+# Secrets
+*.pem
+*.key
+*.crt
+secrets/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Build artifacts
+*.pyc
+*.pyo
+*.pyd

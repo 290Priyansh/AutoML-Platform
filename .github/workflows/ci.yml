@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install pytest pytest-asyncio pytest-cov pytest-mock ruff mypy
+    
+    - name: Run unit tests
+      run: pytest backend/tests/unit/ -v --cov=backend --cov-report=xml
+    
+    - name: Run integration tests
+      run: pytest backend/tests/integration/ -v
+    
+    - name: Upload coverage
+      uses: codecov/codecov-action@v4
+      with:
+        files: ./coverage.xml
+    
+    - name: Lint with Ruff
+      run: ruff check backend/
+    
+    - name: Type check with MyPy
+      run: mypy backend/
+  
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Build API image
+      run: docker build -f infra/docker/Dockerfile.api -t automl-api:test .
+    
+    - name: Build Worker image
+      run: docker build -f infra/docker/Dockerfile.worker -t automl-worker:test .
+    
+    - name: Test API image
+      run: |
+        docker run --rm -d --name api-test -p 8000:8000 automl-api:test
+        sleep 10
+        curl -f http://localhost:8000/health || exit 1
+        docker stop api-test
+    
+    - name: Test Worker image
+      run: |
+        docker run --rm automl-worker:test celery -A backend.workers.celery_app inspect ping

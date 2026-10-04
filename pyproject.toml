@@ -1,0 +1,152 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "automl-platform"
+version = "0.1.0"
+description = "AutoML-as-a-Service backend"
+authors = ["AutoML Team"]
+readme = "README.md"
+packages = [{include = "backend"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+# API
+fastapi = "^0.115.0"
+uvicorn = {extras = ["standard"], version = "^0.30.0"}
+pydantic = "^2.8.0"
+pydantic-settings = "^2.4.0"
+python-multipart = "^0.0.9"
+
+# Async task queue
+celery = {extras = ["redis"], version = "^5.4.0"}
+redis = "^5.0.8"
+kombu = "^5.3.7"
+
+# LangGraph + LangChain
+langgraph = "^0.2.0"
+langchain = "^0.3.0"
+langchain-groq = "^0.2.0"
+langchain-anthropic = "^0.2.0"
+langchain-openai = "^0.2.0"
+langchain-community = "^0.3.0"
+langsmith = "^0.1.120"
+
+# LLM providers
+groq = "^0.12.0"
+anthropic = "^0.34.0"
+openai = "^1.45.0"
+ollama = "^0.3.3"
+
+# ML core
+scikit-learn = "^1.5.2"
+xgboost = "^2.1.1"
+lightgbm = "^4.5.0"
+imbalanced-learn = "^0.12.3"
+optuna = "^3.6.1"
+optuna-integration = "^3.6.1"
+
+# Data processing
+pandas = "^2.2.3"
+numpy = "^2.1.0"
+pyarrow = "^17.0.0"
+
+# EDA
+ydata-profiling = "^4.9.0"
+
+# PDF / URL ingestion
+pdfplumber = "^0.11.4"
+camelot-py = {extras = ["cv"], version = "^0.11.0"}
+playwright = "^1.47.0"
+beautifulsoup4 = "^4.12.3"
+requests = "^2.32.3"
+
+# Embeddings + vector DB
+sentence-transformers = "^3.1.0"
+chromadb = "^0.5.7"
+qdrant-client = "^1.11.0"
+
+# Explainability
+shap = "^0.46.0"
+lime = "^0.2.0.1"
+
+# Fairness
+fairlearn = "^0.10.0"
+
+# MLOps
+mlflow = "^2.16.0"
+dvc = {extras = ["s3"], version = "^3.55.0"}
+
+# Model export
+onnx = "^1.17.0"
+skl2onnx = "^1.17.0"
+onnxruntime = "^1.19.0"
+
+# Monitoring
+prometheus-fastapi-instrumentator = "^7.0.0"
+evidently = "^0.4.40"
+opentelemetry-api = "^1.27.0"
+opentelemetry-sdk = "^1.27.0"
+
+# Cloud
+boto3 = "^1.35.0"
+s3fs = "^2024.9.0"
+
+# LLMOps
+langfuse = "^2.51.0"
+guardrails-ai = "^0.5.10"
+
+# Fine-tuning (worker only)
+peft = "^0.12.0"
+transformers = "^4.44.0"
+accelerate = "^0.34.0"
+unsloth = "^2024.9.0"
+
+# Utilities
+httpx = "^0.27.0"
+joblib = "^1.4.2"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+
+# Additional utilities
+weasyprint = "^61.2"
+category-encoders = "^2.6.3"
+chardet = "^5.2.0"
+python-dotenv = "^1.0.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.0"
+pytest-asyncio = "^0.23.0"
+pytest-cov = "^5.0.0"
+pytest-mock = "^3.12.0"
+ruff = "^0.5.0"
+mypy = "^1.10.0"
+moto = "^4.2.0"
+fakeredis = "^2.21.0"
+unittest.mock = "stdlib"
+
+[tool.poetry.scripts]
+api = "backend.main:app"
+worker = "backend.workers.celery_app:celery_app"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+select = ["E", "F", "I", "W", "UP", "B", "C4", "PT"]
+ignore = ["E501", "B008"]
+[tool.ruff.per-file-ignores]
+"backend/tests/**/*" = ["S101"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["backend/tests"]
+pythonpath = ["."]
