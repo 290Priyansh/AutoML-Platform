@@ -3,13 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useJobStatus, useJobResults, useJobModels, useJobPlots, useJobReport, useDeployModel } from '../hooks/useApi';
 import { useJobWebSocket } from '../hooks/useWebSocket';
 import { apiClient } from '../api/client';
-import { cn, formatDuration, downloadBlob } from '../lib/utils';
+import { cn, downloadBlob } from '../lib/utils';
 import {
   Loader2,
   CheckCircle,
   AlertCircle,
   X,
-  ChevronRight,
   Download,
   BarChart2,
   FileText,
@@ -17,7 +16,6 @@ import {
   Brain,
   Search,
   Sparkles,
-  Activity,
   Layers,
   Cpu,
   Workflow,
@@ -163,7 +161,7 @@ export function JobDetail() {
   const { isConnected, lastMessage } = useJobWebSocket(jobId!);
 
   const [activeTab, setActiveTab] = useState<'overview' | 'models' | 'plots' | 'explainability' | 'report' | 'deployment'>('overview');
-  const [selectedModel, setSelectedModel] = useState<any | null>(null);
+  const [_selectedModel, setSelectedModel] = useState<any | null>(null);
 
   // Dynamic progress calculation (starting from 0% initially, never static 65%)
   const currentProgress = isCompleted
@@ -220,24 +218,26 @@ export function JobDetail() {
   if (statusLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <div className="relative w-20 h-20">
-          <div className="absolute inset-0 rounded-full border-4 border-purple-200 dark:border-purple-900/40 animate-ping opacity-25" />
-          <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-purple-600 border-r-indigo-600 animate-spin" />
+        <div className="w-10 h-10 squircle-md bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center mb-3">
+          <Loader2 className="w-5 h-5 animate-spin text-[var(--text-muted)]" />
         </div>
-        <p className="mt-6 text-base font-medium text-gray-700 dark:text-gray-300">Synchronizing pipeline status...</p>
+        <p className="text-xs text-[var(--text-muted)]">Synchronizing pipeline status...</p>
       </div>
     );
   }
 
   if (!jobStatus) {
     return (
-      <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-sm max-w-lg mx-auto">
-        <AlertCircle className="w-14 h-14 mx-auto text-red-500 mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Job not found</h2>
-        <p className="text-gray-500 dark:text-gray-400 mt-2 px-6">The requested AutoML pipeline execution does not exist or has expired.</p>
+      <div className="text-center py-16 surface-card squircle-xl border border-[var(--border)] max-w-md mx-auto p-8">
+        <AlertCircle className="w-10 h-10 mx-auto text-[var(--status-error)] mb-3" />
+        <h2 className="text-xl font-serif font-medium text-[var(--text)]">Job not found</h2>
+        <p className="text-xs text-[var(--text-muted)] mt-1.5 px-4 leading-relaxed">
+          The requested AutoML pipeline execution does not exist or has expired.
+        </p>
         <Button 
           onClick={() => navigate('/jobs')} 
-          className="mt-6 px-6 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl shadow-md transition-all"
+          variant="default"
+          className="mt-6"
         >
           Return to Jobs
         </Button>
@@ -252,61 +252,55 @@ export function JobDetail() {
   };
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto pb-12">
-      {/* Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-gray-900 via-purple-950 to-slate-900 text-white p-6 sm:p-8 shadow-xl border border-purple-500/20">
-        <div className="absolute top-0 right-0 -mt-12 -mr-12 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/3 -mb-12 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <div className="flex items-start sm:items-center gap-4">
-            <div className="p-3.5 bg-gradient-to-tr from-purple-600 to-indigo-500 rounded-2xl shadow-lg ring-4 ring-purple-500/20">
-              <Brain className="w-8 h-8 text-white" />
+    <div className="space-y-8 max-w-[1280px] mx-auto pb-12">
+      {/* Header Banner - Restyled flat on page background with bottom divider */}
+      <div className="border-b border-[var(--border)] pb-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div className="flex items-start sm:items-center gap-3.5">
+            <div className="w-10 h-10 squircle-md bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center text-[var(--text-muted)] flex-shrink-0">
+              <Brain className="w-5 h-5" />
             </div>
             <div>
-              <div className="flex flex-wrap items-center gap-2.5 mb-1.5">
-                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-                  Job <span className="font-mono text-purple-300">{jobId?.slice(0, 10)}</span>
+              <div className="flex flex-wrap items-center gap-2.5 mb-1">
+                <h1 className="text-2xl sm:text-3xl font-serif font-normal tracking-tight text-[var(--text)]">
+                  Job <span className="font-mono text-[var(--accent)]">{jobId?.slice(0, 10)}</span>
                 </h1>
-                <span className={cn(
-                  'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider backdrop-blur-md shadow-sm',
-                  jobStatus.status === 'completed' && 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30',
-                  jobStatus.status === 'running' && 'bg-blue-500/20 text-blue-300 border border-blue-500/30 animate-pulse',
-                  jobStatus.status === 'queued' && 'bg-amber-500/20 text-amber-300 border border-amber-500/30',
-                  jobStatus.status === 'failed' && 'bg-rose-500/20 text-rose-300 border border-rose-500/30',
-                )}>
-                  {jobStatus.status === 'running' && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                  {jobStatus.status === 'completed' && <CheckCircle className="w-3.5 h-3.5" />}
-                  {jobStatus.status}
+                <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase">
+                  <span className={cn(
+                    'w-1.5 h-1.5 rounded-full',
+                    jobStatus.status === 'completed' && 'bg-[var(--status-success)]',
+                    jobStatus.status === 'running' && 'bg-[var(--status-running)] animate-pulse',
+                    jobStatus.status === 'queued' && 'bg-[var(--status-warning)]',
+                    jobStatus.status === 'failed' && 'bg-[var(--status-error)]',
+                  )} />
+                  <span className="text-[var(--text)]">{jobStatus.status}</span>
+                  {jobStatus.status === 'running' && <Loader2 className="w-3 h-3 animate-spin text-[var(--status-running)]" />}
                 </span>
 
                 {isConnected ? (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                    <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                    </span>
+                  <span className="inline-flex items-center gap-1.5 text-[11px] font-mono text-[var(--text-muted)]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--status-success)]" />
                     Live Stream
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-700/50 text-gray-400 border border-gray-600/40">
+                  <span className="text-[11px] font-mono text-[var(--text-muted)]">
                     Polling (2s)
                   </span>
                 )}
               </div>
 
-              <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm text-gray-300">
-                <span className="flex items-center gap-1">
-                  <Clock className="w-4 h-4 text-purple-400" />
+              <div className="flex flex-wrap items-center gap-2.5 text-xs text-[var(--text-muted)]">
+                <span className="flex items-center gap-1 font-mono">
+                  <Clock className="w-3.5 h-3.5 text-[var(--text-muted)]" />
                   {jobStatus.created_at ? new Date(jobStatus.created_at).toLocaleTimeString() : 'Just now'}
                 </span>
                 {jobStatus.problem_type && (
-                  <span className="px-2 py-0.5 rounded-md bg-white/10 text-white font-mono text-xs">
+                  <span className="px-2 py-0.5 squircle-sm bg-[var(--surface-2)] border border-[var(--border)] font-mono text-[11px] text-[var(--text-muted)]">
                     {jobStatus.problem_type}
                   </span>
                 )}
                 {jobStatus.target_column && (
-                  <span className="px-2 py-0.5 rounded-md bg-white/10 text-white font-mono text-xs">
+                  <span className="px-2 py-0.5 squircle-sm bg-[var(--surface-2)] border border-[var(--border)] font-mono text-[11px] text-[var(--text-muted)]">
                     target: {jobStatus.target_column}
                   </span>
                 )}
@@ -314,25 +308,25 @@ export function JobDetail() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             {isCompleted && (
               <div className="flex items-center gap-2">
                 <Button 
                   variant="outline" 
                   size="sm" 
                   onClick={() => handleDownloadReport('pdf')}
-                  className="bg-white/10 hover:bg-white/20 text-white border-white/20 rounded-xl"
+                  className="squircle-sm"
                 >
-                  <Download className="w-4 h-4 mr-1.5" />
+                  <Download className="w-3.5 h-3.5 mr-1.5" />
                   PDF Report
                 </Button>
                 <Button 
                   variant="outline" 
                   size="sm" 
                   onClick={() => handleDownloadReport('md')}
-                  className="bg-white/10 hover:bg-white/20 text-white border-white/20 rounded-xl"
+                  className="squircle-sm"
                 >
-                  <FileText className="w-4 h-4 mr-1.5" />
+                  <FileText className="w-3.5 h-3.5 mr-1.5" />
                   Markdown
                 </Button>
               </div>
@@ -341,24 +335,22 @@ export function JobDetail() {
               variant="ghost" 
               size="sm" 
               onClick={() => navigate('/jobs')}
-              className="text-gray-300 hover:text-white hover:bg-white/10 rounded-xl"
+              className="squircle-sm text-[var(--text-muted)] hover:text-[var(--text)]"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </Button>
           </div>
         </div>
       </div>
 
       {/* Main Execution Overview Card */}
-      <div className="glass-panel rounded-3xl p-6 sm:p-8 shadow-sm border border-gray-200/80 dark:border-gray-700/80">
+      <div className="surface-card squircle-xl p-6 sm:p-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-purple-100 dark:bg-purple-950/60 rounded-2xl">
-              <Workflow className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-            </div>
+          <div className="flex items-center gap-2.5">
+            <Workflow className="w-5 h-5 text-[var(--accent)]" />
             <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">End-to-End Pipeline Progress</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <h2 className="text-base font-semibold text-[var(--text)]">End-to-End Pipeline Progress</h2>
+              <p className="text-xs text-[var(--text-muted)]">
                 All 24 multi-agent processes executed in sequence
               </p>
             </div>
@@ -366,10 +358,10 @@ export function JobDetail() {
 
           <div className="flex items-center gap-3">
             <div className="text-right">
-              <div className="text-2xl font-black bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+              <div className="text-2xl font-mono tabular-nums font-semibold text-[var(--text)]">
                 {currentProgress}%
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+              <p className="text-xs text-[var(--text-muted)]">
                 {isCompleted ? 'Finished' : isQueued ? 'Queued' : 'In Execution'}
               </p>
             </div>
@@ -377,49 +369,39 @@ export function JobDetail() {
         </div>
 
         {/* Dynamic Progress Track */}
-        <div className="relative w-full h-4 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden p-0.5 shadow-inner">
+        <div className="w-full h-1.5 bg-[var(--surface-2)] border border-[var(--border)] squircle-sm overflow-hidden mb-6">
           <div 
-            className="h-full bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 rounded-full transition-all duration-700 ease-out relative"
+            className="h-full bg-[var(--accent)] squircle-sm transition-all duration-700 ease-out"
             style={{ width: `${currentProgress}%` }}
-          >
-            {isRunning && <div className="absolute inset-0 animate-shimmer rounded-full" />}
-          </div>
+          />
         </div>
 
         {/* Live Active Agent Spotlight */}
         {isRunning && (
-          <div className="mt-6 p-4 rounded-2xl bg-gradient-to-r from-blue-50/90 via-indigo-50/70 to-purple-50/90 dark:from-blue-950/30 dark:via-indigo-950/20 dark:to-purple-950/30 border border-blue-200/80 dark:border-blue-800/60 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3.5">
-              <div className="relative">
-                <div className="w-10 h-10 rounded-xl bg-blue-600 dark:bg-blue-500 flex items-center justify-center shadow-md">
-                  <Activity className="w-5 h-5 text-white animate-pulse" />
-                </div>
-                <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500" />
-                </span>
-              </div>
+          <div className="mb-6 p-4 squircle-md bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <span className="w-2 h-2 rounded-full bg-[var(--status-running)] animate-pulse flex-shrink-0" />
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs uppercase tracking-wider font-bold text-blue-600 dark:text-blue-400">
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-muted)]">
                     Executing Agent
                   </span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                  <span className="text-[11px] font-mono text-[var(--text-muted)]">
                     (Step {Math.max(1, currentAgentIdx + 1)} of 24)
                   </span>
                 </div>
-                <h3 className="text-base font-bold text-gray-900 dark:text-white">
+                <h3 className="text-sm font-semibold text-[var(--text)]">
                   {activeAgentLabel}
                 </h3>
                 {lastMessage?.message && (
-                  <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5 font-mono truncate max-w-xl">
+                  <p className="text-[11px] font-mono text-[var(--text-muted)] mt-0.5 truncate max-w-xl">
                     {lastMessage.message}
                   </p>
                 )}
               </div>
             </div>
-            <div className="hidden sm:flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 px-3.5 py-1.5 rounded-xl border border-blue-200 dark:border-blue-800/40 text-xs font-semibold text-blue-700 dark:text-blue-300 shadow-sm">
-              <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-600" />
+            <div className="hidden sm:flex items-center gap-1.5 text-xs font-mono text-[var(--status-running)]">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
               Active
             </div>
           </div>
@@ -427,52 +409,46 @@ export function JobDetail() {
 
         {/* Failed Banner */}
         {isFailed && (
-          <div className="mt-6 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/60 flex items-center gap-3 text-rose-700 dark:text-rose-300">
-            <AlertCircle className="w-6 h-6 flex-shrink-0 text-rose-600" />
+          <div className="mb-6 p-3.5 squircle-md bg-[var(--surface-2)] border border-[var(--status-error)]/30 flex items-center gap-2.5 text-[var(--status-error)]">
+            <AlertCircle className="w-4 h-4 flex-shrink-0" />
             <div>
-              <p className="font-semibold text-sm">Pipeline failed during {activeAgentLabel}</p>
-              <p className="text-xs text-rose-600 dark:text-rose-400 mt-0.5">{jobStatus.error || 'Check server logs for detailed traceback.'}</p>
+              <p className="font-medium text-xs">Pipeline failed during {activeAgentLabel}</p>
+              <p className="text-[11px] text-[var(--text-muted)] mt-0.5">{jobStatus.error || 'Check server logs for detailed traceback.'}</p>
             </div>
           </div>
         )}
 
         {/* Dynamic 4-Phase Grid */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-          {PHASES_CONFIG.map(({ phase, label, subtitle, icon: PhaseIcon, gradient, borderColor, bgLight, textColor, dotColor }) => {
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {PHASES_CONFIG.map(({ phase, label, icon: PhaseIcon }) => {
             const phaseAgents = AGENT_ORDER.filter(a => AGENT_PHASES[a] === phase);
             const completedInPhase = phaseAgents.filter(a => getAgentStatus(a).status === 'completed').length;
             const hasRunning = phaseAgents.some(a => getAgentStatus(a).status === 'running');
-            const hasFailed = phaseAgents.some(a => getAgentStatus(a).status === 'failed');
 
             return (
               <div 
                 key={phase} 
-                className={cn(
-                  'rounded-2xl border transition-all duration-300 overflow-hidden flex flex-col bg-white dark:bg-gray-800/90 shadow-sm hover:shadow-md',
-                  hasRunning ? 'ring-2 ring-blue-500 dark:ring-blue-400 border-blue-300 dark:border-blue-700 glow-active' : borderColor
-                )}
+                className="squircle-lg border border-[var(--border)] bg-[var(--surface)] overflow-hidden flex flex-col"
               >
                 {/* Phase Header */}
-                <div className={cn('p-4 border-b flex items-center justify-between', bgLight, borderColor)}>
-                  <div className="flex items-center gap-2.5">
-                    <div className={cn('w-7 h-7 rounded-lg flex items-center justify-center text-white bg-gradient-to-tr shadow-sm', gradient)}>
-                      <PhaseIcon className="w-4 h-4" />
-                    </div>
+                <div className="p-3.5 bg-[var(--surface-2)] border-b border-[var(--border)] flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <PhaseIcon className="w-3.5 h-3.5 text-[var(--text-muted)]" />
                     <div>
-                      <h4 className={cn('text-sm font-bold', textColor)}>{label}</h4>
-                      <p className="text-[11px] text-gray-500 dark:text-gray-400">{completedInPhase} / {phaseAgents.length} completed</p>
+                      <h4 className="text-xs font-semibold text-[var(--text)]">{label}</h4>
+                      <p className="text-[11px] font-mono text-[var(--text-muted)]">{completedInPhase} / {phaseAgents.length} completed</p>
                     </div>
                   </div>
                   {completedInPhase === phaseAgents.length && (
-                    <CheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                    <CheckCircle className="w-3.5 h-3.5 text-[var(--status-success)] flex-shrink-0" />
                   )}
                   {hasRunning && (
-                    <Loader2 className="w-4 h-4 text-blue-500 animate-spin flex-shrink-0" />
+                    <Loader2 className="w-3.5 h-3.5 text-[var(--status-running)] animate-spin flex-shrink-0" />
                   )}
                 </div>
 
                 {/* Agents in Phase */}
-                <div className="divide-y divide-gray-100 dark:divide-gray-700/60 flex-1">
+                <div className="divide-y divide-[var(--border)] flex-1">
                   {phaseAgents.map((agentName) => {
                     const agentState = getAgentStatus(agentName);
                     const isCurrent = agentState.status === 'running';
@@ -481,24 +457,24 @@ export function JobDetail() {
                       <div 
                         key={agentName}
                         className={cn(
-                          'px-3.5 py-2.5 flex items-center justify-between transition-colors text-xs',
-                          isCurrent ? 'bg-blue-50/80 dark:bg-blue-900/20 font-semibold' : 'hover:bg-gray-50/80 dark:hover:bg-gray-700/30'
+                          'px-3.5 py-2 flex items-center justify-between transition-colors text-xs',
+                          isCurrent ? 'bg-[var(--surface-2)] font-medium' : 'hover:bg-[var(--surface-2)]/50'
                         )}
                       >
-                        <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                          <div className={cn(
-                            'w-2 h-2 rounded-full flex-shrink-0',
-                            agentState.status === 'completed' && 'bg-emerald-500',
-                            agentState.status === 'running' && 'bg-blue-500 animate-ping',
-                            agentState.status === 'failed' && 'bg-rose-500',
-                            agentState.status === 'pending' && 'bg-gray-300 dark:bg-gray-600'
+                        <div className="flex items-center gap-2 min-w-0 pr-2">
+                          <span className={cn(
+                            'w-1.5 h-1.5 rounded-full flex-shrink-0',
+                            agentState.status === 'completed' && 'bg-[var(--status-success)]',
+                            agentState.status === 'running' && 'bg-[var(--status-running)] animate-pulse',
+                            agentState.status === 'failed' && 'bg-[var(--status-error)]',
+                            agentState.status === 'pending' && 'bg-[var(--border)]'
                           )} />
                           <span className={cn(
-                            'truncate',
-                            agentState.status === 'completed' && 'text-gray-700 dark:text-gray-200',
-                            agentState.status === 'running' && 'text-blue-700 dark:text-blue-300',
-                            agentState.status === 'failed' && 'text-rose-700 dark:text-rose-300',
-                            agentState.status === 'pending' && 'text-gray-400 dark:text-gray-500'
+                            'truncate text-[11px]',
+                            agentState.status === 'completed' && 'text-[var(--text)]',
+                            agentState.status === 'running' && 'text-[var(--text)] font-semibold',
+                            agentState.status === 'failed' && 'text-[var(--status-error)]',
+                            agentState.status === 'pending' && 'text-[var(--text-muted)]'
                           )}>
                             {AGENT_LABELS[agentName] || agentName}
                           </span>
@@ -506,13 +482,13 @@ export function JobDetail() {
 
                         <div className="flex items-center gap-1.5 flex-shrink-0">
                           {agentState.status === 'completed' && (
-                            <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
+                            <CheckCircle className="w-3 h-3 text-[var(--status-success)]" />
                           )}
                           {agentState.status === 'running' && (
-                            <Loader2 className="w-3.5 h-3.5 text-blue-500 animate-spin" />
+                            <Loader2 className="w-3 h-3 text-[var(--status-running)] animate-spin" />
                           )}
                           {agentState.status === 'failed' && (
-                            <AlertCircle className="w-3.5 h-3.5 text-rose-500" />
+                            <AlertCircle className="w-3 h-3 text-[var(--status-error)]" />
                           )}
                         </div>
                       </div>
@@ -526,16 +502,16 @@ export function JobDetail() {
       </div>
 
       {/* Tabs Container */}
-      <div className="glass-panel rounded-3xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm">
-        <div className="border-b border-gray-200 dark:border-gray-700 px-6 pt-4 bg-gray-50/50 dark:bg-gray-900/40">
+      <div className="surface-card squircle-xl overflow-hidden">
+        <div className="border-b border-[var(--border)] px-6 pt-4 bg-[var(--surface-2)]/40">
           <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as any)} className="w-full">
-            <TabsList className="grid w-full grid-cols-6 bg-gray-200/60 dark:bg-gray-800/60 p-1 rounded-2xl">
-              <TabsTrigger value="overview" className="rounded-xl font-medium"><BarChart2 className="w-4 h-4 mr-2" />Overview</TabsTrigger>
-              <TabsTrigger value="models" disabled={!isCompleted} className="rounded-xl font-medium"><Brain className="w-4 h-4 mr-2" />Models</TabsTrigger>
-              <TabsTrigger value="plots" disabled={!isCompleted} className="rounded-xl font-medium"><FileText className="w-4 h-4 mr-2" />Plots</TabsTrigger>
-              <TabsTrigger value="explainability" disabled={!isCompleted} className="rounded-xl font-medium"><Search className="w-4 h-4 mr-2" />SHAP</TabsTrigger>
-              <TabsTrigger value="report" disabled={!isCompleted} className="rounded-xl font-medium"><Sparkles className="w-4 h-4 mr-2" />Report</TabsTrigger>
-              <TabsTrigger value="deployment" disabled={!isCompleted} className="rounded-xl font-medium"><Rocket className="w-4 h-4 mr-2" />Deploy</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-6 h-9">
+              <TabsTrigger value="overview"><BarChart2 className="w-3.5 h-3.5 mr-1.5" />Overview</TabsTrigger>
+              <TabsTrigger value="models" disabled={!isCompleted}><Brain className="w-3.5 h-3.5 mr-1.5" />Models</TabsTrigger>
+              <TabsTrigger value="plots" disabled={!isCompleted}><FileText className="w-3.5 h-3.5 mr-1.5" />Plots</TabsTrigger>
+              <TabsTrigger value="explainability" disabled={!isCompleted}><Search className="w-3.5 h-3.5 mr-1.5" />SHAP</TabsTrigger>
+              <TabsTrigger value="report" disabled={!isCompleted}><Sparkles className="w-3.5 h-3.5 mr-1.5" />Report</TabsTrigger>
+              <TabsTrigger value="deployment" disabled={!isCompleted}><Rocket className="w-3.5 h-3.5 mr-1.5" />Deploy</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>

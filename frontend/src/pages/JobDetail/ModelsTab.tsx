@@ -7,7 +7,7 @@ interface ModelsTabProps {
   onDeploy?: (modelIndex: number) => Promise<void>;
 }
 
-export function ModelsTab({ models, onSelectModel, onDeploy }: ModelsTabProps) {
+export function ModelsTab({ models, onSelectModel, onDeploy: _onDeploy }: ModelsTabProps) {
   const [sortBy, setSortBy] = useState<'rank' | 'score' | 'time'>('rank');
 
   const sortedModels = (models || [])
@@ -21,13 +21,13 @@ export function ModelsTab({ models, onSelectModel, onDeploy }: ModelsTabProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Model Comparison</h3>
+        <h3 className="text-sm font-semibold text-[var(--text)]">Model Comparison</h3>
         <div className="flex items-center gap-2">
-          <ArrowUpDown className="w-4 h-4 text-gray-400" />
+          <ArrowUpDown className="w-3.5 h-3.5 text-[var(--text-muted)]" />
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
-            className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500"
+            className="h-9 px-3 border border-[var(--border)] squircle-sm bg-[var(--surface)] text-xs text-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] cursor-pointer"
           >
             <option value="rank">Sort by Rank</option>
             <option value="score">Sort by Score</option>
@@ -36,28 +36,28 @@ export function ModelsTab({ models, onSelectModel, onDeploy }: ModelsTabProps) {
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-2.5">
         {sortedModels.length === 0 ? (
-          <p className="text-sm text-gray-500">No trained models available.</p>
+          <p className="text-xs text-[var(--text-muted)]">No trained models available.</p>
         ) : (
           sortedModels.map((model) => (
             <div
               key={model.model_name}
               onClick={() => onSelectModel(model)}
-              className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-700 transition-colors rounded-xl p-4 cursor-pointer"
+              className="surface-card squircle-lg p-4 hover:border-[var(--text-muted)] transition-colors cursor-pointer"
             >
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center font-bold text-white">
+                <div className="flex items-center gap-3">
+                  <div className="w-7 h-7 squircle-sm bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center font-mono font-medium text-xs text-[var(--text)]">
                     {model.rank || 1}
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900 dark:text-white">{model.model_name}</p>
-                    <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2 mt-0.5">
-                      <span className="px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded text-xs font-medium">
+                    <p className="font-semibold text-sm text-[var(--text)]">{model.model_name}</p>
+                    <div className="text-xs text-[var(--text-muted)] flex items-center gap-2 mt-0.5">
+                      <span className="px-2 py-0.5 bg-[var(--surface-2)] border border-[var(--border)] text-[var(--text-muted)] squircle-sm text-[11px] font-mono">
                         {((model.composite_score || 0) * 100).toFixed(1)}% score
                       </span>
-                      <span className="text-gray-400 dark:text-gray-500">
+                      <span className="font-mono text-[11px]">
                         Training: {model.train_time || 0}s
                       </span>
                     </div>
@@ -65,12 +65,12 @@ export function ModelsTab({ models, onSelectModel, onDeploy }: ModelsTabProps) {
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="text-right">
-                    <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                    <p className="text-xl font-mono tabular-nums font-semibold text-[var(--text)]">
                       {((model.composite_score || 0) * 100).toFixed(1)}%
                     </p>
                   </div>
                   <button
-                    className="text-purple-600 dark:text-purple-400 hover:underline text-sm font-medium"
+                    className="text-[var(--accent)] hover:underline text-xs font-medium cursor-pointer"
                     onClick={(e) => {
                       e.stopPropagation();
                       onSelectModel(model);

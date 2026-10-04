@@ -29,34 +29,33 @@ interface MetricCardProps {
 export function MetricCard({ title, label, value, change, trend, icon, subtitle }: MetricCardProps) {
   const displayTitle = title || label || '';
   return (
-    <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-      <CardContent className="p-6">
-        <div className="flex items-start justify-between">
+    <Card className="surface-card squircle-lg border border-[var(--border)]">
+      <CardContent className="p-5">
+        <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{displayTitle}</p>
-            <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{value}</p>
-            {subtitle && <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{subtitle}</p>}
+            <p className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">{displayTitle}</p>
+            <p className="font-mono text-2xl font-semibold tabular-nums text-[var(--text)] mt-1.5">{value}</p>
+            {subtitle && <p className="text-xs text-[var(--text-muted)] mt-1">{subtitle}</p>}
           </div>
           <div className={cn(
-            'p-2 rounded-lg',
-            trend === 'up' && 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-            trend === 'down' && 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-            trend === 'neutral' && 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+            'w-8 h-8 rounded-[var(--r-sm)] squircle-sm border border-[var(--border)] bg-[var(--surface-2)] flex items-center justify-center text-[var(--text-muted)]',
+            trend === 'up' && 'text-[var(--status-success)]',
+            trend === 'down' && 'text-[var(--status-error)]'
           )}>
             {icon}
           </div>
         </div>
         {change && (
-          <div className="mt-4 flex items-center">
+          <div className="mt-3.5 flex items-center gap-1.5 font-mono text-xs">
             <span className={cn(
-              'text-sm font-medium',
-              trend === 'up' && 'text-green-600 dark:text-green-400',
-              trend === 'down' && 'text-red-600 dark:text-red-400',
-              trend === 'neutral' && 'text-gray-500 dark:text-gray-400'
+              'font-medium tabular-nums',
+              trend === 'up' && 'text-[var(--status-success)]',
+              trend === 'down' && 'text-[var(--status-error)]',
+              trend === 'neutral' && 'text-[var(--text-muted)]'
             )}>
               {change}
             </span>
-            <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">vs last month</span>
+            <span className="text-[var(--text-muted)]">vs last month</span>
           </div>
         )}
       </CardContent>
@@ -94,28 +93,28 @@ export function TrainingMetricsChart({ data, height = 300 }: TrainingMetricsChar
   }));
 
   return (
-    <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+    <Card className="surface-card squircle-lg border border-[var(--border)]">
       <CardHeader>
-        <CardTitle>Agent Training Duration</CardTitle>
+        <CardTitle className="text-sm font-medium text-[var(--text)]">Agent Training Duration</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={height}>
           <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 10, bottom: 10 }}>
             <defs>
               <linearGradient id="colorTraining" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
-                <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                <stop offset="5%" stopColor="#1F5C46" stopOpacity={0.2} />
+                <stop offset="95%" stopColor="#1F5C46" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
             <XAxis 
               dataKey="agent" 
-              tick={{ fontSize: 11, fill: '#6b7280' }}
+              tick={{ fontSize: 11, fill: 'var(--text-muted)' }}
               axisLine={false}
               tickLine={false}
             />
             <YAxis 
-              tick={{ fontSize: 11, fill: '#6b7280' }}
+              tick={{ fontSize: 11, fill: 'var(--text-muted)' }}
               axisLine={false}
               tickLine={false}
               tickFormatter={(v) => `${Number(v).toFixed(0)}s`}
@@ -123,15 +122,19 @@ export function TrainingMetricsChart({ data, height = 300 }: TrainingMetricsChar
             <Tooltip 
               formatter={(value: any) => [`${Number(value || 0).toFixed(1)}s`, 'Avg Duration']}
               contentStyle={{
-                backgroundColor: '#fff',
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px',
+                backgroundColor: 'var(--surface)',
+                border: '1px solid var(--border)',
+                borderRadius: '6px',
+                color: 'var(--text)',
+                fontFamily: 'JetBrains Mono, monospace',
+                fontSize: '12px',
               }}
             />
             <Area 
               type="monotone" 
               dataKey="avgDuration" 
-              stroke="#8b5cf6" 
+              stroke="#1F5C46" 
+              strokeWidth={1.5}
               fillOpacity={1} 
               fill="url(#colorTraining)" 
             />
@@ -157,7 +160,7 @@ interface ModelTrendsChartProps {
 }
 
 export function ModelTrendsChart({ data, metricName = 'accuracy', height = 300 }: ModelTrendsChartProps) {
-  if (!data.length) return <div className="text-center py-8 text-gray-500">No trend data available</div>;
+  if (!data.length) return <div className="text-center py-8 text-[var(--text-muted)]">No trend data available</div>;
 
   const normalizedData = data.map((d: any) => {
     if ('model' in d && 'timestamp' in d && 'metric' in d) {
@@ -184,24 +187,26 @@ export function ModelTrendsChart({ data, metricName = 'accuracy', height = 300 }
     return entry;
   });
 
+  const palette = ['#1F5C46', '#2E7D4F', '#7A766D', '#B54708', '#026AA2', '#5F5E5B'];
+
   return (
-    <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+    <Card className="surface-card squircle-lg border border-[var(--border)]">
       <CardHeader>
-        <CardTitle>Model Performance Trends ({metricName})</CardTitle>
+        <CardTitle className="text-sm font-medium text-[var(--text)]">Model Performance Trends ({metricName})</CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={height}>
           <LineChart data={chartData} margin={{ top: 10, right: 30, left: 10, bottom: 10 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
             <XAxis 
               dataKey="epoch" 
-              tick={{ fontSize: 11, fill: '#6b7280' }}
+              tick={{ fontSize: 11, fill: 'var(--text-muted)' }}
               axisLine={false}
               tickLine={false}
               tickFormatter={(v) => typeof v === 'number' && v > 1000000 ? new Date(v).toLocaleTimeString() : v}
             />
             <YAxis 
-              tick={{ fontSize: 11, fill: '#6b7280' }}
+              tick={{ fontSize: 11, fill: 'var(--text-muted)' }}
               axisLine={false}
               tickLine={false}
               tickFormatter={(v) => Number(v).toFixed(4)}
@@ -209,9 +214,12 @@ export function ModelTrendsChart({ data, metricName = 'accuracy', height = 300 }
             <Tooltip 
               formatter={(value: any) => [Number(value || 0).toFixed(4), metricName]}
               contentStyle={{
-                backgroundColor: '#fff',
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px',
+                backgroundColor: 'var(--surface)',
+                border: '1px solid var(--border)',
+                borderRadius: '6px',
+                color: 'var(--text)',
+                fontFamily: 'JetBrains Mono, monospace',
+                fontSize: '12px',
               }}
             />
             {models.map((model, i) => (
@@ -219,8 +227,8 @@ export function ModelTrendsChart({ data, metricName = 'accuracy', height = 300 }
                 key={model}
                 type="monotone"
                 dataKey={model}
-                stroke={`hsl(${i * 60}, 70%, 50%)`}
-                strokeWidth={2}
+                stroke={palette[i % palette.length]}
+                strokeWidth={1.5}
                 dot={false}
                 data={chartData.filter(d => d.model === model)}
               />
@@ -297,26 +305,26 @@ export function MetricsDashboard({
           {trainingHistory && trainingHistory.length > 0 && (
             <TrainingMetricsChart data={trainingHistory} />
           )}
-          <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+          <Card className="surface-card squircle-lg border border-[var(--border)]">
             <CardHeader>
-              <CardTitle>Training Pipeline Overview</CardTitle>
+              <CardTitle className="text-sm font-medium text-[var(--text)]">Training Pipeline Overview</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div className="space-y-2.5">
                 {[
                   { phase: 'Understanding', agents: 5, avgTime: '2.3m' },
                   { phase: 'Preprocessing', agents: 7, avgTime: '4.1m' },
                   { phase: 'Modeling', agents: 6, avgTime: '12.5m' },
                   { phase: 'Output', agents: 6, avgTime: '3.2m' },
                 ].map((p) => (
-                  <div key={p.phase} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                  <div key={p.phase} className="flex items-center justify-between p-3 bg-[var(--surface-2)] rounded-[var(--r-sm)] border border-[var(--border)]">
                     <div>
-                      <p className="font-medium text-gray-900 dark:text-white">{p.phase}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">{p.agents} agents</p>
+                      <p className="text-xs font-medium text-[var(--text)]">{p.phase}</p>
+                      <p className="text-xs text-[var(--text-muted)] font-mono mt-0.5">{p.agents} agents</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-mono text-lg text-purple-600 dark:text-purple-400">{p.avgTime}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">avg duration</p>
+                      <p className="font-mono text-sm font-semibold tabular-nums text-[var(--accent)]">{p.avgTime}</p>
+                      <p className="text-[11px] text-[var(--text-muted)]">avg duration</p>
                     </div>
                   </div>
                 ))}
@@ -335,24 +343,25 @@ export function MetricsDashboard({
         </TabsContent>
 
         <TabsContent value="timeline" className="mt-4">
-          <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+          <Card className="surface-card squircle-lg border border-[var(--border)]">
             <CardHeader>
-              <CardTitle>Training Pipeline Timeline</CardTitle>
+              <CardTitle className="text-sm font-medium text-[var(--text)]">Training Pipeline Timeline</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {trainingHistory?.slice(0, 10).map((h, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                    <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-                      <span className="text-xs font-bold text-purple-600 dark:text-purple-400">{i + 1}</span>
+                  <div key={i} className="flex items-center gap-3 p-3 bg-[var(--surface-2)] rounded-[var(--r-sm)] border border-[var(--border)]">
+                    <div className="w-6 h-6 rounded-[var(--r-sm)] squircle-sm border border-[var(--border)] bg-[var(--surface)] flex items-center justify-center">
+                      <span className="text-xs font-mono font-medium text-[var(--text-muted)]">{i + 1}</span>
                     </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-gray-900 dark:text-white">{h.agent}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-[var(--text)] truncate">{h.agent}</p>
+                      <p className="text-[11px] text-[var(--text-muted)] font-mono tabular-nums mt-0.5">
                         {new Date(h.timestamp).toLocaleString()} • {h.duration}s
                       </p>
                     </div>
-                    <span className="px-2 py-1 text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 rounded">
+                    <span className="h-5 px-2 rounded-xs border border-[var(--border)] bg-[var(--surface)] text-[var(--status-success)] text-[10px] font-mono flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--status-success)]" />
                       Completed
                     </span>
                   </div>

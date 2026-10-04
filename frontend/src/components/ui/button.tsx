@@ -16,20 +16,20 @@ const Button = React.forwardRef<
   return (
     <Comp
       className={cn(
-        "inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex items-center justify-center whitespace-nowrap squircle-sm text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-40 cursor-pointer",
         {
-          "bg-purple-600 text-white hover:bg-purple-700 shadow-lg hover:shadow-xl": variant === "default",
-          "bg-red-600 text-white hover:bg-red-700": variant === "destructive",
-          "border border-gray-300 bg-white hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:hover:bg-gray-700": variant === "outline",
-          "bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700": variant === "secondary",
-          "hover:bg-gray-100 dark:hover:bg-gray-800": variant === "ghost",
-          "text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 underline-offset-4 hover:underline": variant === "link",
+          "bg-[var(--accent)] text-[var(--accent-contrast)] hover:bg-[var(--accent-hover)] border border-black/10 dark:border-white/10 shadow-[var(--shadow-subtle)]": variant === "default",
+          "bg-[var(--status-error)] text-white hover:opacity-90": variant === "destructive",
+          "border border-[var(--border)] bg-transparent text-[var(--text)] hover:bg-[var(--surface-2)]": variant === "outline",
+          "bg-[var(--surface-2)] text-[var(--text)] hover:bg-[var(--border)]": variant === "secondary",
+          "text-[var(--text)] hover:bg-[var(--surface-2)]": variant === "ghost",
+          "text-[var(--accent)] underline-offset-4 hover:underline": variant === "link",
         },
         {
-          "h-10 px-4 py-2": size === "default",
-          "h-9 rounded-lg px-3": size === "sm",
-          "h-11 rounded-xl px-8": size === "lg",
-          "h-10 w-10": size === "icon",
+          "h-9 px-4 py-2": size === "default",
+          "h-8 px-3 text-xs": size === "sm",
+          "h-11 px-6 text-base": size === "lg",
+          "h-9 w-9": size === "icon",
         },
         className
       )}

@@ -10,7 +10,6 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts';
-import { cn } from '../../lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 
 interface SHAPFeatureImportanceProps {
@@ -37,12 +36,12 @@ export function SHAPFeatureImportance({ importance, topN = 15, height = 400 }: S
     <div className="w-full h-full" style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={sortedFeatures} layout="vertical" margin={{ top: 10, right: 30, left: 10, bottom: 10 }}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
           <XAxis 
             type="number" 
             domain={[-maxAbs * 1.1, maxAbs * 1.1]}
             tickFormatter={(v) => v.toFixed(3)}
-            tick={{ fontSize: 11, fill: '#6b7280' }}
+            tick={{ fontSize: 11, fill: 'var(--text-muted)' }}
             axisLine={false}
             tickLine={false}
           />
@@ -50,28 +49,30 @@ export function SHAPFeatureImportance({ importance, topN = 15, height = 400 }: S
             type="category" 
             dataKey="feature" 
             width={200}
-            tick={{ fontSize: 11, fill: '#374151' }}
+            tick={{ fontSize: 11, fill: 'var(--text)' }}
             axisLine={false}
             tickLine={false}
           />
           <Tooltip 
             formatter={(value: any) => [typeof value === 'number' ? value.toFixed(4) : String(value), 'SHAP Value']}
             contentStyle={{
-              backgroundColor: '#fff',
-              border: '1px solid #e5e7eb',
-              borderRadius: '8px',
-              boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+              backgroundColor: 'var(--surface)',
+              border: '1px solid var(--border)',
+              borderRadius: '6px',
+              color: 'var(--text)',
+              fontFamily: 'JetBrains Mono, monospace',
+              fontSize: '12px',
             }}
             labelFormatter={(name) => sortedFeatures.find(f => f.feature === name)?.fullFeature || name}
           />
           <Bar 
             dataKey="absImportance" 
-            radius={[0, 4, 4, 0]}
+            radius={[0, 2, 2, 0]}
           >
             {sortedFeatures.map((entry, index) => (
               <Cell 
                 key={`cell-${index}`} 
-                fill={entry.direction === 'positive' ? '#10b981' : '#ef4444'}
+                fill={entry.direction === 'positive' ? '#2E7D4F' : '#B42318'}
               />
             ))}
           </Bar>
@@ -112,27 +113,28 @@ export function SHAPSummaryPlot({ shapValues, topN = 20 }: SHAPSummaryProps) {
     .sort((a, b) => b.meanAbsShap - a.meanAbsShap)
     .slice(0, topN);
 
+  const maxMeanShap = Math.max(...features.map(f => Math.abs(f.meanShap)), 0.001);
+
   return (
-    <div className="space-y-2">
-      {features.map((f, i) => (
+    <div className="space-y-2.5">
+      {features.map((f) => (
         <div key={f.feature} className="flex items-center gap-3">
-          <div className="w-48 text-right text-sm text-gray-600 dark:text-gray-400 truncate pr-2">
+          <div className="w-44 text-right text-xs text-[var(--text-muted)] font-mono truncate pr-2">
             {f.feature}
           </div>
-          <div className="flex-1 h-6 relative">
-            <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 rounded-full" />
+          <div className="flex-1 h-3 relative bg-[var(--surface-2)] rounded-xs border border-[var(--border)] overflow-hidden">
+            <div className="absolute top-0 bottom-0 left-1/2 w-px bg-[var(--border)] z-10" />
             <div 
-              className="absolute top-0 bottom-0 rounded-full transition-all duration-300"
+              className="absolute top-0 bottom-0 rounded-xs transition-all duration-300 opacity-90"
               style={{
                 left: '50%',
-                width: `${Math.min(Math.abs(f.meanShap) / Math.max(...features.map(f => Math.abs(f.meanShap))) * 50, 50)}%`,
-                background: f.meanShap >= 0 ? 'linear-gradient(to right, #10b981, #34d399)' : 'linear-gradient(to left, #ef4444, #f87171)',
+                width: `${Math.min((Math.abs(f.meanShap) / maxMeanShap) * 48, 48)}%`,
+                backgroundColor: f.meanShap >= 0 ? '#2E7D4F' : '#B42318',
                 transform: f.meanShap >= 0 ? 'none' : 'translateX(-100%)',
               }}
             />
-            <div className="absolute top-0 bottom-0 left-1/2 w-px bg-gray-400" />
           </div>
-          <span className="w-16 text-sm text-gray-600 dark:text-gray-400 font-mono">
+          <span className="w-16 text-xs text-[var(--text)] font-mono tabular-nums text-right">
             {f.meanShap >= 0 ? '+' : ''}{f.meanShap.toFixed(3)}
           </span>
         </div>
@@ -150,15 +152,15 @@ export function SHAPDashboard({
 }) {
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">SHAP Explainability</h3>
-        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-          <span className="flex items-center gap-1">
-            <span className="w-3 h-3 rounded-full bg-green-500" />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <h3 className="text-base font-medium text-[var(--text)]">SHAP Explainability</h3>
+        <div className="flex items-center gap-4 text-xs text-[var(--text-muted)] font-mono">
+          <span className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-[var(--status-success)]" />
             Positive impact
           </span>
-          <span className="flex items-center gap-1">
-            <span className="w-3 h-3 rounded-full bg-red-500" />
+          <span className="flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-[var(--status-error)]" />
             Negative impact
           </span>
         </div>
@@ -179,14 +181,14 @@ export function SHAPDashboard({
           {shapValues ? (
             <SHAPSummaryPlot shapValues={shapValues} />
           ) : (
-            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+            <div className="text-center py-8 text-xs text-[var(--text-muted)]">
               SHAP summary data not available
             </div>
           )}
         </TabsContent>
         
         <TabsContent value="dependence" className="mt-4">
-          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+          <div className="text-center py-8 text-xs text-[var(--text-muted)]">
             SHAP dependence plots require individual feature analysis
           </div>
         </TabsContent>

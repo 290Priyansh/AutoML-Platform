@@ -44,7 +44,7 @@ const TabsList = React.forwardRef<
       role="tablist"
       aria-orientation="horizontal"
       className={cn(
-        "inline-flex h-10 items-center justify-center rounded-md bg-gray-100 dark:bg-gray-800 p-1 text-gray-500 dark:text-gray-400",
+        "inline-flex h-9 items-center justify-center squircle-sm border border-[var(--border)] bg-[var(--surface)] p-0.5 text-[var(--text-muted)]",
         className
       )}
       {...props}
@@ -73,10 +73,10 @@ const TabsTrigger = React.forwardRef<
       data-state={isActive ? "active" : "inactive"}
       onClick={() => context.onValueChange?.(value)}
       className={cn(
-        "inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex items-center justify-center whitespace-nowrap squircle-sm px-3 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] disabled:pointer-events-none disabled:opacity-40 cursor-pointer",
         isActive
-          ? "bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm"
-          : "hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white",
+          ? "bg-[var(--surface-2)] text-[var(--text)] font-semibold shadow-none border border-[var(--border)]"
+          : "text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)]/60",
         className
       )}
       {...props}

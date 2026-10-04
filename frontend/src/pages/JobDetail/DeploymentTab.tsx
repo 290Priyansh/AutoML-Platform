@@ -45,31 +45,31 @@ export function DeploymentTab({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-            <Rocket className="w-5 h-5 text-purple-600" />
+          <h3 className="text-base font-medium text-[var(--text)] flex items-center gap-2">
+            <Rocket className="w-4 h-4 text-[var(--accent)]" strokeWidth={1.5} />
             Model Deployment
           </h3>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-[var(--text-muted)] mt-0.5">
             Deploy your trained models as production-ready microservice endpoints.
           </p>
         </div>
       </div>
 
       {deployedEntries.length > 0 && (
-        <div className="space-y-4">
-          <h4 className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-green-500" />
+        <div className="space-y-3">
+          <h4 className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)] flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-[var(--status-success)]" />
             Active Endpoints
           </h4>
-          <div className="space-y-3">
+          <div className="space-y-2">
             {deployedEntries.map(([name, url]) => (
               <div
                 key={name}
-                className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4 flex items-center justify-between"
+                className="surface-card squircle-lg border border-[var(--border)] p-4 flex items-center justify-between"
               >
                 <div>
-                  <p className="font-semibold text-gray-900 dark:text-white">{name}</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-300 font-mono truncate max-w-md">
+                  <p className="text-sm font-medium text-[var(--text)]">{name}</p>
+                  <p className="text-xs text-[var(--text-muted)] font-mono truncate max-w-md mt-0.5">
                     {url}
                   </p>
                 </div>
@@ -77,9 +77,9 @@ export function DeploymentTab({
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3 py-1.5 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm flex items-center gap-1.5"
+                  className="h-8 px-3 border border-[var(--border)] rounded-[var(--r-sm)] squircle-sm bg-[var(--surface-2)] text-[var(--text)] hover:border-[var(--accent)] text-xs font-mono flex items-center gap-1.5 transition-colors"
                 >
-                  <ExternalLink className="w-4 h-4" />
+                  <ExternalLink className="w-3.5 h-3.5 text-[var(--text-muted)]" strokeWidth={1.5} />
                   Open Endpoint
                 </a>
               </div>
@@ -88,12 +88,12 @@ export function DeploymentTab({
         </div>
       )}
 
-      <div className="space-y-4">
-        <h4 className="font-medium text-gray-900 dark:text-white">Top Recommended Models</h4>
+      <div className="space-y-3">
+        <h4 className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">Top Recommended Models</h4>
         {topModels.length === 0 ? (
-          <p className="text-sm text-gray-500">No trained models available to deploy.</p>
+          <p className="text-xs text-[var(--text-muted)]">No trained models available to deploy.</p>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {topModels.map((model, i) => {
               const isAlreadyDeployed = !!allEndpoints[model.model_name];
               const isCurrentlyDeploying = deployingIndex === i || isDeploying;
@@ -101,15 +101,15 @@ export function DeploymentTab({
               return (
                 <div
                   key={model.model_name || i}
-                  className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-700 transition-colors rounded-xl p-4 flex items-center justify-between"
+                  className="surface-card squircle-lg border border-[var(--border)] p-4 flex items-center justify-between"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center font-bold text-white text-sm">
+                    <div className="w-7 h-7 rounded-[var(--r-sm)] squircle-sm border border-[var(--border)] bg-[var(--surface-2)] flex items-center justify-center font-mono text-xs font-medium text-[var(--text)]">
                       {i + 1}
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900 dark:text-white">{model.model_name}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                      <p className="text-sm font-medium text-[var(--text)]">{model.model_name}</p>
+                      <p className="text-xs font-mono tabular-nums text-[var(--text-muted)] mt-0.5">
                         Score: {((model.composite_score || 0) * 100).toFixed(1)}% •{' '}
                         {model.train_time || 0}s training time
                       </p>
@@ -118,22 +118,22 @@ export function DeploymentTab({
 
                   <div>
                     {isAlreadyDeployed ? (
-                      <span className="px-3 py-1.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-lg text-sm font-medium flex items-center gap-1">
-                        <CheckCircle2 className="w-4 h-4" /> Deployed
+                      <span className="h-8 px-3 rounded-[var(--r-sm)] squircle-sm border border-[var(--border)] bg-[var(--surface-2)] text-[var(--status-success)] text-xs font-mono flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5" strokeWidth={1.5} /> Deployed
                       </span>
                     ) : (
                       <button
                         onClick={() => handleDeployClick(i)}
                         disabled={isCurrentlyDeploying}
-                        className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 flex items-center gap-2 text-sm font-medium"
+                        className="h-8 px-3.5 rounded-[var(--r-sm)] squircle-sm bg-[var(--accent)] text-[var(--accent-fg)] hover:opacity-90 disabled:opacity-50 flex items-center gap-1.5 text-xs font-medium transition-opacity"
                       >
                         {isCurrentlyDeploying ? (
                           <>
-                            <Loader2 className="w-4 h-4 animate-spin" /> Deploying...
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" strokeWidth={1.5} /> Deploying...
                           </>
                         ) : (
                           <>
-                            <Rocket className="w-4 h-4" /> Deploy
+                            <Rocket className="w-3.5 h-3.5" strokeWidth={1.5} /> Deploy
                           </>
                         )}
                       </button>

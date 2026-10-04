@@ -25,35 +25,35 @@ export function Layout() {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[2px] lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-300 lg:translate-x-0',
+          'fixed inset-y-0 left-0 z-50 w-[232px] bg-[var(--bg)] border-r border-[var(--border)] transform transition-transform duration-200 lg:translate-x-0',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         )}
       >
         <div className="flex flex-col h-full">
-          <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700">
-            <Link to="/" className="flex items-center gap-2">
-              <GitBranch className="w-8 h-8 text-purple-600" />
-              <span className="text-xl font-bold text-gray-900 dark:text-white">AutoML</span>
+          <div className="flex items-center justify-between h-14 px-5 border-b border-[var(--border)]">
+            <Link to="/" className="flex items-center gap-2.5">
+              <GitBranch className="w-5 h-5 text-[var(--accent)]" />
+              <span className="text-base font-semibold tracking-tight text-[var(--text)]">AutoML</span>
             </Link>
             <button
-              className="lg:hidden p-2 rounded text-gray-500 hover:text-gray-700"
+              className="lg:hidden p-1.5 squircle-sm text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)]"
               onClick={() => setSidebarOpen(false)}
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
 
-          <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+          <nav className="flex-1 px-3 py-3 space-y-1 overflow-y-auto">
             {navigation.map((item) => {
               const isActive = location.pathname === item.href || 
                 (item.href !== '/' && location.pathname.startsWith(item.href));
@@ -62,35 +62,38 @@ export function Layout() {
                   key={item.name}
                   to={item.href}
                   className={cn(
-                    'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                    'relative flex items-center gap-3 px-3 h-9 squircle-sm text-sm font-medium transition-colors',
                     isActive
-                      ? 'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
-                      : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'
+                      ? 'bg-[var(--surface-2)] text-[var(--text)] font-semibold'
+                      : 'text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)]/60'
                   )}
                 >
-                  <item.icon className="w-5 h-5" />
-                  {item.name}
+                  {isActive && (
+                    <span className="absolute left-0 top-1.5 bottom-1.5 w-[2px] bg-[var(--accent)] rounded-full" />
+                  )}
+                  <item.icon className="w-4 h-4 flex-shrink-0" />
+                  <span>{item.name}</span>
                 </Link>
               );
             })}
           </nav>
 
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-            <div className="text-xs text-gray-500 dark:text-gray-400">
+          <div className="p-4 border-t border-[var(--border)]">
+            <div className="text-[11px] font-mono text-[var(--text-muted)] tracking-tight">
               AutoML Platform v0.1.0
             </div>
           </div>
         </div>
       </aside>
 
-      <div className="lg:pl-64">
-        <header className="sticky top-0 z-30 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between h-16 px-6">
+      <div className="lg:pl-[232px]">
+        <header className="sticky top-0 z-30 bg-[var(--bg)]/90 backdrop-blur-sm border-b border-[var(--border)]">
+          <div className="flex items-center justify-between h-14 px-4 sm:px-8">
             <button
-              className="lg:hidden p-2 rounded text-gray-500 hover:bg-gray-100"
+              className="lg:hidden p-1.5 squircle-sm text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)]"
               onClick={() => setSidebarOpen(true)}
             >
-              <Menu className="w-6 h-6" />
+              <Menu className="w-5 h-5" />
             </button>
 
             <div className="flex-1 lg:flex-none" />
@@ -100,29 +103,29 @@ export function Layout() {
 
               <div className="relative">
                 <button
-                  className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                  className="flex items-center gap-2 p-1.5 squircle-sm hover:bg-[var(--surface-2)] cursor-pointer"
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                 >
-                  <div className="w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
-                    <span className="text-sm font-medium text-purple-700 dark:text-purple-300">U</span>
+                  <div className="w-7 h-7 squircle-sm bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center">
+                    <span className="text-xs font-semibold text-[var(--text)]">U</span>
                   </div>
-                  <span className="hidden md:block text-sm font-medium text-gray-700 dark:text-gray-300">User</span>
-                  <ChevronDown className="w-4 h-4 text-gray-500" />
+                  <span className="hidden md:block text-xs font-medium text-[var(--text)]">User</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-[var(--text-muted)]" />
                 </button>
 
                 {userMenuOpen && (
                   <>
                     <div className="fixed inset-0 z-40" onClick={() => setUserMenuOpen(false)} />
-                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-50">
+                    <div className="absolute right-0 mt-2 w-48 bg-[var(--surface)] squircle-md shadow-[var(--shadow-subtle)] border border-[var(--border)] py-1 z-50">
                       <Link
                         to="/settings"
-                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        className="block px-3.5 py-1.5 text-xs text-[var(--text)] hover:bg-[var(--surface-2)]"
                         onClick={() => setUserMenuOpen(false)}
                       >
                         Settings
                       </Link>
                       <button
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        className="w-full text-left px-3.5 py-1.5 text-xs text-[var(--text)] hover:bg-[var(--surface-2)] cursor-pointer"
                         onClick={() => setUserMenuOpen(false)}
                       >
                         Sign out
@@ -135,7 +138,7 @@ export function Layout() {
           </div>
         </header>
 
-        <main className="p-6 lg:p-8">
+        <main className="p-4 sm:p-8 max-w-[1280px] mx-auto w-full">
           <Outlet />
         </main>
       </div>
@@ -145,9 +148,9 @@ export function Layout() {
 
 function HealthIndicator() {
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-800">
-      <span className="w-2 h-2 rounded-full bg-green-500" />
-      <span className="text-xs text-gray-600 dark:text-gray-400">Healthy</span>
+    <div className="flex items-center gap-2">
+      <span className="w-2 h-2 rounded-full bg-[var(--status-success)]" />
+      <span className="text-[13px] text-[var(--text-muted)]">Healthy</span>
     </div>
   );
 }

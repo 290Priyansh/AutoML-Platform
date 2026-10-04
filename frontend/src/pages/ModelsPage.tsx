@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { cn } from '../lib/utils';
 import { Search, Filter, Brain, Network, Cpu, HardDrive } from 'lucide-react';
 
 interface ModelDetail {
@@ -41,21 +40,12 @@ const TYPE_ICONS: Record<string, typeof Brain> = {
   instance: Network,
 };
 
-const TYPE_COLORS: Record<string, string> = {
-  linear: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-  tree: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-  boosting: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
-  neural: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
-  svm: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-  instance: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
-};
-
 export function ModelsPage() {
   const [search, setSearch] = useState('');
   const [problemType, setProblemType] = useState<'all' | 'classification' | 'regression'>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
 
-  const allModels = Object.entries(MODEL_CATEGORIES).flatMap(([_, modelList]) => modelList);
+  const allModels = Object.values(MODEL_CATEGORIES).flat();
 
   const filteredModels = allModels.filter((model) => {
     const matchesSearch = model.name.toLowerCase().includes(search.toLowerCase());
@@ -69,28 +59,28 @@ export function ModelsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Available Models</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">
+        <h1 className="text-2xl sm:text-3xl font-serif font-normal text-[var(--text)] tracking-tight">Available Models</h1>
+        <p className="text-xs text-[var(--text-muted)] mt-1">
           AutoML supports a wide range of algorithms for both classification and regression tasks.
         </p>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-        <div className="flex flex-col sm:flex-row gap-4">
+      <div className="surface-card squircle-lg p-4">
+        <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
             <input
               type="text"
               placeholder="Search models..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500"
+              className="w-full h-10 pl-9 pr-4 border border-[var(--border)] squircle-sm bg-[var(--surface)] text-[var(--text)] text-xs placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all"
             />
           </div>
           <select
             value={problemType}
             onChange={(e) => setProblemType(e.target.value as any)}
-            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 w-48"
+            className="h-10 px-3.5 border border-[var(--border)] squircle-sm bg-[var(--surface)] text-[var(--text)] text-xs focus:outline-none focus:ring-2 focus:ring-[var(--accent)] sm:w-44 cursor-pointer"
           >
             <option value="all">All Problems</option>
             <option value="classification">Classification</option>
@@ -99,7 +89,7 @@ export function ModelsPage() {
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 w-48"
+            className="h-10 px-3.5 border border-[var(--border)] squircle-sm bg-[var(--surface)] text-[var(--text)] text-xs focus:outline-none focus:ring-2 focus:ring-[var(--accent)] sm:w-44 cursor-pointer"
           >
             <option value="all">All Types</option>
             {availableTypes.map(type => (
@@ -115,25 +105,24 @@ export function ModelsPage() {
           return (
             <div
               key={`${model.problem_type}-${model.name}`}
-              className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 hover:border-purple-300 dark:hover:border-purple-700 transition-colors"
+              className="surface-card squircle-lg p-5 flex flex-col justify-between hover:border-[var(--text-muted)] transition-colors"
             >
-              <div className="flex items-start justify-between mb-4">
-                <div className={cn('p-3 rounded-lg', TYPE_COLORS[model.type])}>
-                  <Icon className="w-6 h-6" />
+              <div>
+                <div className="flex items-start justify-between mb-3">
+                  <div className="w-8 h-8 squircle-sm bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center text-[var(--text-muted)]">
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <span className="text-[11px] font-mono text-[var(--text-muted)] bg-[var(--surface-2)] px-2 py-0.5 squircle-sm border border-[var(--border)]">
+                    {model.problem_type}
+                  </span>
                 </div>
-                <span className="text-xs font-medium px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
-                  {model.problem_type}
-                </span>
+                <h3 className="font-semibold text-sm text-[var(--text)] mb-1.5">{model.name}</h3>
+                <p className="text-xs text-[var(--text-muted)] mb-4 line-clamp-2 leading-relaxed">
+                  {model.description}
+                </p>
               </div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">{model.name}</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2">
-                {model.description}
-              </p>
-              <div className="flex items-center gap-2">
-                <span className={cn(
-                  'px-2 py-0.5 rounded text-xs font-medium',
-                  TYPE_COLORS[model.type]
-                )}>
+              <div className="flex items-center gap-2 pt-2 border-t border-[var(--border)]">
+                <span className="text-[11px] font-mono text-[var(--text-muted)]">
                   {model.type.charAt(0).toUpperCase() + model.type.slice(1)}
                 </span>
               </div>
@@ -143,15 +132,15 @@ export function ModelsPage() {
       </div>
 
       {filteredModels.length === 0 && (
-        <div className="text-center py-12">
-          <Filter className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-          <p className="text-gray-500 dark:text-gray-400">No models match your filters</p>
+        <div className="text-center py-12 surface-card squircle-lg">
+          <Filter className="w-8 h-8 mx-auto text-[var(--text-muted)] mb-3" />
+          <p className="text-xs text-[var(--text-muted)]">No models match your filters</p>
         </div>
       )}
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">How AutoML Selects Models</h2>
-        <div className="grid gap-4 md:grid-cols-3">
+      <div className="surface-card squircle-lg p-6">
+        <h2 className="text-sm font-semibold text-[var(--text)] mb-4">How AutoML Selects Models</h2>
+        <div className="grid gap-3 md:grid-cols-3">
           <GuideCard
             title="Problem Detection"
             description="AutoML automatically detects whether your task is classification, regression, clustering, or time series based on the target variable."
@@ -184,9 +173,9 @@ export function ModelsPage() {
 
 function GuideCard({ title, description }: { title: string; description: string }) {
   return (
-    <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-700">
-      <h3 className="font-medium text-gray-900 dark:text-white mb-1">{title}</h3>
-      <p className="text-sm text-gray-600 dark:text-gray-400">{description}</p>
+    <div className="p-3.5 bg-[var(--surface-2)] squircle-md border border-[var(--border)]">
+      <h3 className="text-xs font-semibold text-[var(--text)] mb-1">{title}</h3>
+      <p className="text-[11px] text-[var(--text-muted)] leading-relaxed">{description}</p>
     </div>
   );
 }

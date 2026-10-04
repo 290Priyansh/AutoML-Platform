@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../api/client';
 import type { JobStatus } from '../types';
-import { formatRelativeTime, getStatusColor, cn } from '../lib/utils';
+import { formatRelativeTime, cn } from '../lib/utils';
 import {
   Search,
   MoreVertical,
@@ -46,7 +46,7 @@ export function JobList() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+        <Loader2 className="w-6 h-6 animate-spin text-[var(--text-muted)]" />
       </div>
     );
   }
@@ -55,43 +55,43 @@ export function JobList() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Training Jobs</h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
+          <h1 className="text-2xl sm:text-3xl font-serif font-normal text-[var(--text)] tracking-tight">Training Jobs</h1>
+          <p className="text-xs text-[var(--text-muted)] mt-1">
             Monitor and manage your AutoML training jobs
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <button
             onClick={() => navigate('/jobs/new')}
-            className="px-4 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors flex items-center gap-2"
+            className="h-9 px-4 bg-[var(--accent)] text-[var(--accent-contrast)] hover:bg-[var(--accent-hover)] border border-black/10 dark:border-white/10 shadow-[var(--shadow-subtle)] squircle-sm font-medium text-xs transition-colors flex items-center gap-1.5 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             New Job
           </button>
           <button
             onClick={() => refetch()}
-            className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+            className="h-9 w-9 border border-[var(--border)] bg-transparent text-[var(--text-muted)] hover:text-[var(--text)] squircle-sm hover:bg-[var(--surface-2)] transition-colors flex items-center justify-center cursor-pointer"
           >
-            <RefreshCw className="w-5 h-5" />
+            <RefreshCw className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
           <input
             type="text"
             placeholder="Search jobs..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500"
+            className="w-full h-10 pl-9 pr-4 border border-[var(--border)] squircle-sm bg-[var(--surface)] text-[var(--text)] text-xs placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all"
           />
         </div>
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 w-48"
+          className="h-10 px-3.5 border border-[var(--border)] squircle-sm bg-[var(--surface)] text-[var(--text)] text-xs focus:outline-none focus:ring-2 focus:ring-[var(--accent)] sm:w-44 cursor-pointer"
         >
           <option value="all">All Status</option>
           <option value="queued">Queued</option>
@@ -101,14 +101,14 @@ export function JobList() {
         </select>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="surface-card squircle-lg overflow-hidden">
         {filteredJobs.length === 0 ? (
           <div className="py-16 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-              <Inbox className="w-8 h-8 text-gray-400" />
+            <div className="w-12 h-12 mx-auto mb-3 squircle-md bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center">
+              <Inbox className="w-6 h-6 text-[var(--text-muted)]" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white">No jobs found</h3>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">
+            <h3 className="text-xl font-serif font-medium text-[var(--text)]">No jobs found</h3>
+            <p className="text-xs text-[var(--text-muted)] mt-1">
               {search || statusFilter !== 'all' 
                 ? 'Try adjusting your filters' 
                 : 'Create your first training job to get started'}
@@ -116,7 +116,7 @@ export function JobList() {
             {!search && statusFilter === 'all' && (
               <button
                 onClick={() => navigate('/jobs/new')}
-                className="mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700"
+                className="mt-4 px-4 h-9 bg-[var(--accent)] text-[var(--accent-contrast)] hover:bg-[var(--accent-hover)] squircle-sm font-medium text-xs transition-colors cursor-pointer"
               >
                 Create Job
               </button>
@@ -124,65 +124,74 @@ export function JobList() {
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 dark:bg-gray-700/50">
-                <tr className="border-b border-gray-200 dark:border-gray-700">
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+            <table className="w-full border-collapse">
+              <thead className="bg-[var(--surface-2)] border-b border-[var(--border)] sticky top-0">
+                <tr className="text-[11px] font-medium text-[var(--text-muted)] uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left">
                     Job ID
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left">
                     Current Agent
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left">
                     Progress
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left">
                     Created
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider pr-6">
+                  <th className="px-6 py-3 text-right pr-6">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+              <tbody className="divide-y divide-[var(--border)] text-xs">
                 {filteredJobs.map((job: JobStatus) => (
                   <tr
                     key={job.job_id}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                    className="h-12 hover:bg-[var(--surface-2)]/60 transition-colors"
                   >
-                    <td className="px-6 py-4">
-                      <code className="text-sm font-mono text-gray-900 dark:text-white">
+                    <td className="px-6 py-3">
+                      <code className="text-xs font-mono text-[var(--text)]">
                         {job.job_id.slice(0, 12)}...
                       </code>
                     </td>
-                    <td className="px-6 py-4">
-                      <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', getStatusColor(job.status))}>
-                        {job.status.charAt(0).toUpperCase() + job.status.slice(1)}
+                    <td className="px-6 py-3">
+                      <span className="inline-flex items-center gap-1.5 text-xs font-medium uppercase">
+                        <span className={cn(
+                          'w-1.5 h-1.5 rounded-full',
+                          job.status === 'completed' && 'bg-[var(--status-success)]',
+                          job.status === 'running' && 'bg-[var(--status-running)]',
+                          job.status === 'queued' && 'bg-[var(--status-warning)]',
+                          job.status === 'failed' && 'bg-[var(--status-error)]',
+                        )} />
+                        <span className="text-[var(--text)]">{job.status}</span>
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 max-w-xs truncate">
+                    <td className="px-6 py-3 text-xs text-[var(--text-muted)] max-w-xs truncate">
                       {job.current_agent.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())}
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="w-32 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-purple-600 rounded-full transition-all duration-300"
-                          style={{ width: `${job.progress_pct}%` }}
-                        />
+                    <td className="px-6 py-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-24 h-1 bg-[var(--surface-2)] border border-[var(--border)] squircle-sm overflow-hidden">
+                          <div
+                            className="h-full bg-[var(--accent)] squircle-sm transition-all duration-300"
+                            style={{ width: `${job.progress_pct}%` }}
+                          />
+                        </div>
+                        <span className="text-xs font-mono tabular-nums text-[var(--text-muted)]">{job.progress_pct}%</span>
                       </div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">{job.progress_pct}%</span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                    <td className="px-6 py-3 text-xs font-mono text-[var(--text-muted)]">
                       {formatRelativeTime(job.created_at)}
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                    <td className="px-6 py-3 text-right">
+                      <div className="flex items-center justify-end gap-1">
                         <Link
                           to={`/jobs/${job.job_id}`}
-                          className="p-2 text-gray-500 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors"
+                          className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)] squircle-sm transition-colors cursor-pointer"
                           title="View details"
                         >
                           <Eye className="w-4 h-4" />
@@ -190,7 +199,7 @@ export function JobList() {
                         {job.status === 'completed' && (
                           <Link
                             to={`/jobs/${job.job_id}/results`}
-                            className="p-2 text-gray-500 hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
+                            className="p-1.5 text-[var(--text-muted)] hover:text-[var(--accent)] hover:bg-[var(--surface-2)] squircle-sm transition-colors cursor-pointer"
                             title="View results"
                           >
                             <Download className="w-4 h-4" />
@@ -198,7 +207,7 @@ export function JobList() {
                         )}
                         <button
                           onClick={() => setSelectedJob(job.job_id)}
-                          className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                          className="p-1.5 text-[var(--text-muted)] hover:text-[var(--status-error)] hover:bg-[var(--surface-2)] squircle-sm transition-colors cursor-pointer"
                           title="More options"
                         >
                           <MoreVertical className="w-4 h-4" />
@@ -214,18 +223,18 @@ export function JobList() {
       </div>
 
       {selectedJob && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-[2px]">
+          <div className="bg-[var(--surface)] border border-[var(--border)] squircle-xl p-6 w-full max-w-md shadow-[var(--shadow-subtle)] text-[var(--text)]">
+            <h3 className="text-xl font-serif font-medium text-[var(--text)] mb-2 tracking-tight">
               Delete Job?
             </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
-              Are you sure you want to delete job <code className="text-sm">{selectedJob.slice(0, 12)}...</code>? This action cannot be undone.
+            <p className="text-xs text-[var(--text-muted)] mb-6">
+              Are you sure you want to delete job <code className="text-xs font-mono">{selectedJob.slice(0, 12)}...</code>? This action cannot be undone.
             </p>
-            <div className="flex justify-end gap-3">
+            <div className="flex justify-end gap-2.5">
               <button
                 onClick={() => setSelectedJob(null)}
-                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                className="px-4 h-9 border border-[var(--border)] bg-transparent text-[var(--text)] squircle-sm text-xs font-medium hover:bg-[var(--surface-2)] transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -235,7 +244,7 @@ export function JobList() {
                   setSelectedJob(null);
                 }}
                 disabled={deleteMutation.isPending}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                className="px-4 h-9 bg-[var(--status-error)] text-white squircle-sm text-xs font-medium hover:opacity-90 disabled:opacity-40 transition-colors cursor-pointer"
               >
                 {deleteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Delete'}
               </button>
